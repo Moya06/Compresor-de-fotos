@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.zip
+*.log
+.pytest_cache/
+inputs/
+.vscode/

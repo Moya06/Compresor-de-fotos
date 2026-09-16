@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compresor de Fotos Profesional</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,sans-serif}
+body{background:#0f172a;color:#e2e8f0;min-height:100vh;padding:24px;display:flex;justify-content:center}
+.c{width:100%;max-width:800px}
+h1{font-size:1.8rem;font-weight:800;text-align:center;margin-bottom:6px;color:#fff}
+.sub{text-align:center;color:#94a3b8;font-size:.95rem;margin-bottom:24px}
+.card{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:22px;margin-bottom:16px}
+.card h2{font-size:1.05rem;font-weight:700;margin-bottom:12px;color:#f1f5f9}
+.drop{border:2px dashed #3b82f6;border-radius:12px;padding:32px 16px;text-align:center;cursor:pointer;transition:.2s;background:#1e293b}
+.drop:hover,.drop.over{border-color:#60a5fa;background:#1e3a5f}
+.drop-icon{font-size:2.8rem;margin-bottom:8px}
+.drop-title{font-weight:700;font-size:1rem}
+.drop-sub{font-size:.85rem;color:#64748b;margin-top:4px}
+.btns{display:flex;gap:10px;justify-content:center;margin-top:14px}
+.btn-s{background:#334155;border:1px solid #475569;padding:8px 16px;border-radius:8px;font-size:.88rem;font-weight:600;color:#e2e8f0;cursor:pointer}
+.btn-s:hover{background:#475569}
+.info-bar{display:none;background:#0f172a;border:1px solid #334155;border-radius:8px;padding:10px 16px;margin-top:14px;justify-content:space-between;align-items:center}
+.info-bar span{font-weight:600;font-size:.95rem}
+.clear{background:none;border:none;color:#ef4444;font-weight:600;cursor:pointer;text-decoration:underline;font-size:.85rem}
+.target-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.target-row label{font-weight:700;font-size:.95rem}
+.target-row input{background:#0f172a;border:1px solid #475569;color:#fff;padding:10px;border-radius:8px;width:100px;font-size:1.1rem;font-weight:800;text-align:center}
+.target-row .unit{font-size:.9rem;color:#94a3b8;font-weight:600}
+.note{font-size:.82rem;color:#64748b;line-height:1.5}
+.note b{color:#94a3b8}
+.btn-go{width:100%;background:#2563eb;color:#fff;border:none;border-radius:10px;padding:14px;font-size:1.05rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(37,99,235,.3)}
+.btn-go:hover:not(:disabled){background:#1d4ed8;transform:translateY(-1px)}
+.btn-go:disabled{background:#475569;cursor:not-allowed;box-shadow:none}
+.pbox{display:none;margin-top:18px}
+.ptrack{height:10px;background:#334155;border-radius:99px;overflow:hidden}
+.pfill{height:100%;width:0;background:linear-gradient(90deg,#2563eb,#60a5fa);border-radius:99px;transition:width .15s}
+.pstat{display:flex;justify-content:space-between;margin-top:6px;font-size:.85rem;color:#94a3b8}
+.result{display:none;background:#064e3b;border:1px solid #059669;border-radius:12px;padding:22px;text-align:center;margin-top:18px}
+.result h3{font-size:1.3rem;font-weight:800;color:#34d399;margin-bottom:4px}
+.result .det{font-size:.88rem;color:#a7f3d0;margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.st{background:#0f172a;border-radius:8px;padding:10px;border:1px solid #065f46}
+.st .lb{font-size:.7rem;color:#6ee7b7;text-transform:uppercase;font-weight:600}
+.st .vl{font-size:1.1rem;font-weight:800;color:#fff;margin-top:2px}
+.btn-dl{background:#059669;color:#fff;border:none;border-radius:10px;padding:14px 28px;font-size:1.05rem;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(5,150,105,.3)}
+.btn-dl:hover{background:#047857}
+input[type=file]{display:none}
+</style>
+</head>
+<body>
+<div class="c">
+<h1>📸 Compresor de Fotos Profesional</h1>
+<p class="sub">Comprime lotes de 100-150+ fotos a un tamaño ZIP exacto. Ultra rápido.</p>
+
+<div class="card">
+<h2>1. Selecciona las Fotos</h2>
+<div class="drop" id="drop">
+<div class="drop-icon">📁</div>
+<div class="drop-title">Arrastra tus fotos aquí</div>
+<div class="drop-sub">PNG, JPG, WebP — lotes de 100-150+ fotos soportados</div>
+<div class="btns">
+<button class="btn-s" onclick="document.getElementById('fi').click()">Archivos</button>
+<button class="btn-s" onclick="document.getElementById('fo').click()">Carpeta</button>
+</div>
+</div>
+<input type="file" id="fi" multiple accept="image/*">
+<input type="file" id="fo" webkitdirectory directory multiple>
+<div class="info-bar" id="info"><span id="infoTxt">0 fotos</span><button class="clear" onclick="clear_()">Quitar</button></div>
+</div>
+
+<div class="card">
+<h2>2. Tamaño Máximo POR IMAGEN</h2>
+<div class="target-row">
+<label>Objetivo por foto:</label>
+<input type="number" id="targetMb" value="10" min="0.5" max="50" step="0.5">
+<span class="unit">MB</span>
+</div>
+<div class="note">
+<b>¡Prioridad en máxima resolución!</b> La imagen no se recorta ni redimensiona (se mantiene a 100%, p.ej. 6000x4000).<br>
+El algoritmo buscará automáticamente la <b>calidad JPEG más alta posible (hasta 98)</b> que permita que cada foto pese menos que el límite indicado.<br>
+<i>Ideal para entregar galerías profesionales sin perder detalles micro.</i>
+</div>
+</div>
+
+<div class="card">
+<button class="btn-go" id="btnGo" onclick="go()" disabled>🚀 Comprimir a ZIP</button>
+<div class="pbox" id="pbox">
+<div class="ptrack"><div class="pfill" id="pfill"></div></div>
+<div class="pstat"><span id="pfile">Preparando...</span><span id="ppct">0%</span></div>
+</div>
+<div class="result" id="res">
+<h3>✅ Compresión Completada</h3>
+<div class="det" id="resDet"></div>
+<div class="stats">
+<div class="st"><div class="lb">Original</div><div class="vl" id="sOrig">-</div></div>
+<div class="st"><div class="lb">ZIP Final</div><div class="vl" id="sComp">-</div></div>
+<div class="st"><div class="lb">Reducción</div><div class="vl" id="sSave">-</div></div>
+<div class="st"><div class="lb">Tiempo</div><div class="vl" id="sTime">-</div></div>
+</div>
+<a href="#" class="btn-dl" id="dlBtn" download>📦 Descargar ZIP</a>
+</div>
+</div>
+</div>
+
+<script>
+let files=[];
+const fmt=b=>{if(!b)return'0 B';const k=1024,s=['B','KB','MB','GB'];const i=Math.floor(Math.log(b)/Math.log(k));return(b/Math.pow(k,i)).toFixed(i>1?2:0)+' '+s[i]};
+const exts=['.jpg','.jpeg','.png','.webp','.bmp','.tiff','.tif'];
+
+const drop=document.getElementById('drop');
+['dragenter','dragover'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('over')}));
+['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove('over')}));
+drop.addEventListener('drop',e=>{if(e.dataTransfer.files.length)pick(e.dataTransfer.files)});
+document.getElementById('fi').addEventListener('change',e=>pick(e.target.files));
+document.getElementById('fo').addEventListener('change',e=>pick(e.target.files));
+
+function pick(fl){
+  files=[];let tb=0;
+  for(let i=0;i<fl.length;i++){const f=fl[i];if(exts.some(x=>f.name.toLowerCase().endsWith(x))){files.push(f);tb+=f.size}}
+  if(!files.length){alert('No se encontraron imágenes.');return clear_()}
+  document.getElementById('info').style.display='flex';
+  document.getElementById('infoTxt').textContent=`${files.length} fotos — ${fmt(tb)}`;
+  document.getElementById('btnGo').disabled=false;
+  document.getElementById('res').style.display='none';
+}
+function clear_(){files=[];document.getElementById('fi').value='';document.getElementById('fo').value='';document.getElementById('info').style.display='none';document.getElementById('btnGo').disabled=true;document.getElementById('res').style.display='none'}
+
+async function safe(r){const t=await r.text();try{return JSON.parse(t)}catch{return{error:`Error ${r.status}: ${t.substring(0,120)}`}}}
+
+async function go(){
+  if(!files.length)return;
+  const btn=document.getElementById('btnGo');btn.disabled=true;
+  const pb=document.getElementById('pbox');pb.style.display='block';
+  const pf=document.getElementById('pfill'),pp=document.getElementById('ppct'),pt=document.getElementById('pfile');
+  document.getElementById('res').style.display='none';
+  pf.style.width='2%';pp.textContent='0%';pt.textContent='Creando sesión...';
+
+  try{
+    // 1. Sesión
+    const sr=await fetch('/api/create_session',{method:'POST'});
+    const sd=await safe(sr);if(!sr.ok||!sd.session_id)throw new Error(sd.error||'Sesión fallida');
+    const sid=sd.session_id;
+
+    // 2. Subir en chunks de 10
+    const CS=10,N=files.length;let up=0;
+    for(let i=0;i<N;i+=CS){
+      const fd=new FormData();
+      for(const f of files.slice(i,i+CS))fd.append('images',f);
+      up+=Math.min(CS,N-i);
+      const pct=Math.round(up/N*40);
+      pf.style.width=pct+'%';pp.textContent=pct+'%';pt.textContent=`Subiendo (${up}/${N})...`;
+      const ur=await fetch(`/api/upload_chunk/${sid}`,{method:'POST',body:fd});
+      const ud=await safe(ur);if(!ur.ok)throw new Error(ud.error||'Upload falló');
+    }
+
+    // 3. Iniciar compresión
+    pf.style.width='42%';pp.textContent='42%';pt.textContent='Calibrando...';
+    const cf=new FormData();
+    cf.append('target_mb',document.getElementById('targetMb').value);
+    const cr=await fetch(`/api/start/${sid}`,{method:'POST',body:cf});
+    const cd=await safe(cr);if(!cr.ok)throw new Error(cd.error||'Compresión fallida');
+
+    // 4. Poll
+    const iv=setInterval(async()=>{
+      const pr=await fetch(`/api/progress/${sid}`);const ps=await safe(pr);
+      if(ps.state==='processing'){
+        const frac=ps.current/Math.max(ps.total,1);
+        const p=42+Math.round(frac*56);
+        pf.style.width=p+'%';pp.textContent=p+'%';
+        pt.textContent=`Comprimiendo (${ps.current}/${ps.total}): ${ps.filename}`;
+      }else if(ps.state==='completed'){
+        clearInterval(iv);
+        pf.style.width='100%';pp.textContent='100%';pt.textContent='¡Listo!';
+        const s=ps.stats;
+        document.getElementById('sOrig').textContent=fmt(s.total_original_size);
+        document.getElementById('sComp').textContent=fmt(s.total_compressed_size);
+        document.getElementById('sSave').textContent=`-${s.reduction_percentage}%`;
+        document.getElementById('sTime').textContent=`${s.elapsed_time}s`;
+        document.getElementById('resDet').textContent=`${s.success_count} fotos procesadas | Calibración: ${s.calibration_time}s | Resoluciones: ${s.resolution_used}`;
+        document.getElementById('dlBtn').href=`/api/download/${sid}`;
+        document.getElementById('res').style.display='block';
+        btn.disabled=false;
+      }else if(ps.state==='error'){
+        clearInterval(iv);alert('Error: '+ps.error);btn.disabled=false;
+      }
+    },300);
+  }catch(e){alert(e.message);btn.disabled=false;pb.style.display='none'}
+}
+</script>
+</body>
+</html>
